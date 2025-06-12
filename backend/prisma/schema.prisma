@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -22,22 +16,25 @@ model Tag {
 }
 
 model User {
-  id        String        @id @default(cuid())
-  email     String        @unique
-  username  String
-  birthdate DateTime
-  avatar    String?
-  posts     Post[]
-  comments  Comment[]
-  boards    BoardMember[]
-  createdAt DateTime      @default(now())
-  tags      Tag[]
+  id           String        @id @default(cuid())
+  email        String        @unique
+  username     String        @unique
+  pass_hash    String
+  birthdate    DateTime
+  avatar       String?
+  posts        Post[]
+  comments     Comment[]
+  boards       BoardMember[]
+  createdAt    DateTime      @default(now())
+  tags         Tag[]
+  votes        PostVote[]
+  commentVotes CommentVote[]
 }
 
 model BoardMember {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  boardId   String
+  boardId   Int
   board     Board    @relation(fields: [boardId], references: [id])
   createdAt DateTime @default(now())
   role      Int      @default(0)
@@ -46,8 +43,9 @@ model BoardMember {
 }
 
 model Board {
-  id          String        @id @default(cuid())
+  id          Int           @id @default(autoincrement())
   name        String
+  slug        String        @unique
   description String?
   image       String?
   createdAt   DateTime      @default(now())
@@ -55,26 +53,50 @@ model Board {
   members     BoardMember[]
 }
 
+model PostVote {
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  value     Int      @default(0)
+
+  @@id([postId, userId])
+}
+
 model Post {
-  id         String    @id @default(cuid())
+  id         String     @id @default(cuid())
   title      String
   content    String?
   attachment String?
   authorId   String
-  author     User      @relation(fields: [authorId], references: [id])
+  author     User       @relation(fields: [authorId], references: [id])
   comments   Comment[]
-  boardId    String
-  board      Board     @relation(fields: [boardId], references: [id])
-  createdAt  DateTime  @default(now())
+  boardId    Int
+  board      Board      @relation(fields: [boardId], references: [id])
+  createdAt  DateTime   @default(now())
+  votes      PostVote[]
+}
+
+model CommentVote {
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  value     Int      @default(0)
+
+  @@id([commentId, userId])
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   content   String
   postId    String
-  level     Int      @default(0)
-  post      Post     @relation(fields: [postId], references: [id])
+  level     Int           @default(0)
+  post      Post          @relation(fields: [postId], references: [id])
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
+  author    User          @relation(fields: [authorId], references: [id])
+  createdAt DateTime      @default(now())
+  votes     CommentVote[]
 }
