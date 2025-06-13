@@ -1,5 +1,4 @@
 import { Card } from "primereact/card";
-import "./login.scss";
 import { InputText } from "primereact/inputtext";
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "primereact/button";
@@ -8,6 +7,7 @@ import { Password } from "primereact/password";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../../api/auth";
 import { useNavigate } from "react-router";
+import styles from "./login.module.scss";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -49,9 +49,9 @@ export default function Login() {
   }, [email, password]);
 
   return (
-    <div className="page">
-      <Card title="Login" className="login-card">
-        <div className="form">
+    <div className={styles.page}>
+      <Card title="Login" className={styles.loginCard}>
+        <div className={styles.form}>
           <div className="p-inputgroup">
             <span className="p-inputgroup-addon">
               <i className="pi pi-user"></i>
@@ -78,7 +78,7 @@ export default function Login() {
           </div>
         </div>
         <Divider />
-        <div className="button-container">
+        <div className={styles.buttonContainer}>
           <Button
             label="Login"
             disabled={!valid}

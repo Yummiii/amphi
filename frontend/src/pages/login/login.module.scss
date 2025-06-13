@@ -6,7 +6,7 @@
     align-items: center;
 }
 
-.login-card {
+.loginCard {
     width: 30rem;
     margin: 1rem;
 
@@ -25,21 +25,21 @@
     justify-content: center;
     gap: 1rem;
 
-    .p-icon-field {
+    :global(.p-icon-field) {
         width: 100%;
         display: flex;
     }
 
-    .p-password-input {
+    :global(.p-password-input) {
         border-radius: 0px 6px 6px 0px;
     }
 }
 
-.button-container {
+.buttonContainer {
     display: flex;
     width: 100%;
 
-    .p-button {
+    :global(.p-button) {
         width: 100%;
     }
 }
