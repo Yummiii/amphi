@@ -3,6 +3,6 @@ export class LoginDto {
   password: string;
 }
 
-export class LoginResponseDto {
+export class AuthResponseDto {
   token: string;
 }

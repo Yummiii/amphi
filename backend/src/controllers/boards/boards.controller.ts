@@ -48,9 +48,9 @@ export class BoardsController {
   }
 
   @Public()
-  @Get(":id")
-  async findOne(@Param("id") id: number) {
-    const board = await this.boardsService.findOne(id);
+  @Get(":slug")
+  async findOne(@Param("slug") slug: string) {
+    const board = await this.boardsService.findOne(slug);
     if (!board) {
       throw new HttpException("Board not found", HttpStatus.NOT_FOUND);
     }

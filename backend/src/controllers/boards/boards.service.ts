@@ -37,9 +37,9 @@ export class BoardsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(slug: string) {
     return this.prisma.board.findUnique({
-      where: { id },
+      where: { slug },
       include: {
         posts: {
           include: {

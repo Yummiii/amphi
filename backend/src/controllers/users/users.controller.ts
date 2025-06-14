@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
@@ -8,7 +9,8 @@ import {
 import { CreateUserDto, LoginDto } from "../../models";
 import { UsersService } from "./users.service";
 import { Public } from "../../auth/public.decorator";
-import { Prisma } from "generated/prisma";
+import { Prisma, User } from "generated/prisma";
+import { CurrentUser } from "src/auth";
 
 @Controller("users")
 export class UsersController {
@@ -44,5 +46,10 @@ export class UsersController {
     } catch {
       throw new HttpException("Failed to log in user", HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  @Get("/me")
+  getCurrentUser(@CurrentUser() user: User) {
+    return user;
   }
 }
