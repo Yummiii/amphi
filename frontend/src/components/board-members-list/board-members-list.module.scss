@@ -1,0 +1,65 @@
+.membersPanel {
+    width: 20rem;
+    height: fit-content;
+
+    // Override PrimeReact Card padding
+    :global(.p-card-body) {
+        padding: 0;
+    }
+
+    :global(.p-card-content) {
+        padding: 0;
+    }
+
+    :global(.p-card-header) {
+        padding: 1rem 1rem 0.5rem 1rem;
+        border-bottom: 1px solid var(--surface-border);
+        margin-bottom: 1rem;
+    }
+}
+
+.membersPanelHeader {
+    h3 {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+}
+
+.membersList {
+    padding: 0 0.5rem 0.5rem 0.5rem;
+}
+
+.memberItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-radius: 6px;
+    background: var(--surface-ground);
+    border: 1px solid var(--surface-border);
+    margin-bottom: 0.5rem;
+
+    &:hover {
+        background: var(--surface-hover);
+    }
+}
+
+.memberInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.memberName {
+    font-weight: 600;
+}
+
+.noMembers {
+    text-align: center;
+    color: var(--text-color-secondary);
+    font-style: italic;
+    margin: 1rem 0;
+    padding: 0 1rem 1rem 1rem;
+}

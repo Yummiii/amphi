@@ -77,4 +77,28 @@ export class BoardsController {
       );
     }
   }
+
+  @Post(":boardSlug/leave")
+  async removeMember(
+    @Param("boardSlug") slug: string,
+    @CurrentUser() user: User,
+  ) {
+    try {
+      return await this.boardsService.removeMember(slug, user.id);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2002") {
+          throw new HttpException(
+            "User is not a member of this board",
+            HttpStatus.CONFLICT,
+          );
+        }
+      }
+
+      throw new HttpException(
+        "Failed to remove member from board",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

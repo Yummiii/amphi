@@ -16,7 +16,7 @@ export class BoardsService {
         data: {
           boardId: board.id,
           userId: ownerId,
-          role: 1,
+          role: 0,
         },
       });
 
@@ -82,7 +82,7 @@ export class BoardsService {
     });
   }
 
-  async addMember(slug: string, userId: string, role: number = 0) {
+  async addMember(slug: string, userId: string, role: number = 1) {
     const board = await this.prisma.board.findUnique({
       where: { slug },
     });
@@ -96,6 +96,25 @@ export class BoardsService {
         boardId: board.id,
         userId,
         role,
+      },
+    });
+  }
+
+  async removeMember(slug: string, userId: string) {
+    const board = await this.prisma.board.findUnique({
+      where: { slug },
+    });
+
+    if (!board) {
+      throw new Error("Board not found");
+    }
+
+    return this.prisma.boardMember.delete({
+      where: {
+        userId_boardId: {
+          boardId: board.id,
+          userId,
+        },
       },
     });
   }

@@ -1,5 +1,5 @@
 .postCard {
-    width: 55rem;
+    width: 100%;
 }
 
 .author {
@@ -14,4 +14,34 @@
     :global(img) {
         object-fit: cover;
     }
+}
+
+.date {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+}
+
+.content {
+    margin: 0;
+}
+
+.footerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.voteButtons {
+    display: flex;
+    align-items: center;
+}
+
+.attachmentContainer {
+    margin-top: 1rem;
+}
+
+.attachment {
+    max-width: 100%;
+    border-radius: 8px;
 }

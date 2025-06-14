@@ -1,0 +1,21 @@
+.createPostButton {
+    :global(.p-button) {
+        font-weight: 500;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
+.fileUpload {
+    width: 100%;
+} 

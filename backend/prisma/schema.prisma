@@ -66,8 +66,7 @@ model PostVote {
 
 model Post {
   id         String     @id @default(cuid())
-  title      String
-  content    String?
+  content    String
   attachment String?
   authorId   String
   author     User       @relation(fields: [authorId], references: [id])

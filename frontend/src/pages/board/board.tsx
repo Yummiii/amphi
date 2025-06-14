@@ -6,11 +6,12 @@ import { Panel } from "primereact/panel";
 import { useCallback, useMemo, useState } from "react";
 import type { MenuItem } from "primereact/menuitem";
 import Posts from "./posts/posts";
+import JoinLeaveButton from "../../components/join-leave-button/join-leave-button";
+import CreatePostButton from "../../components/create-post-button/create-post-button";
 import styles from "./board.module.scss";
 
 export const BoardTabs = {
   Posts: "Posts",
-  Members: "Members",
   Details: "Details",
   Settings: "Settings",
 } as const;
@@ -33,11 +34,6 @@ export default function Board() {
         data: BoardTabs.Posts,
       },
       {
-        label: "Membros",
-        icon: "pi pi-users",
-        data: BoardTabs.Members,
-      },
-      {
         label: "Detalhes",
         icon: "pi pi-info",
         data: BoardTabs.Details,
@@ -53,9 +49,13 @@ export default function Board() {
   const tabData = useMemo(() => {
     switch (tab) {
       case BoardTabs.Posts:
-        return <Posts posts={query.data?.posts} />;
-      case BoardTabs.Members:
-        return <div>Esta é a página de membros do board.</div>;
+        return (
+          <Posts
+            posts={query.data?.posts}
+            boardSlug={params.slug as string}
+            members={query.data?.members}
+          />
+        );
       case BoardTabs.Details:
         return <div>Esta é a página de detalhes do board.</div>;
       case BoardTabs.Settings:
@@ -63,7 +63,7 @@ export default function Board() {
       default:
         return <div>Selecione uma aba para ver o conteúdo.</div>;
     }
-  }, [tab, query]);
+  }, [tab, query, params.slug]);
 
   const currentIndex = useMemo(() => {
     return tabItems.findIndex((x) => x.data == tab);
@@ -76,13 +76,30 @@ export default function Board() {
   return (
     <div className={styles.board}>
       <Panel>
+        <div className={styles.boardHeader}>
+          <div className={styles.boardInfo}>
+            <h2 className={styles.boardTitle}>{query.data?.name}</h2>
+            {query.data?.description && (
+              <p className={styles.boardDescription}>
+                {query.data.description}
+              </p>
+            )}
+          </div>
+          <div className={styles.boardActions}>
+            <CreatePostButton boardSlug={params.slug as string} />
+            <JoinLeaveButton
+              boardSlug={params.slug as string}
+              members={query.data?.members}
+            />
+          </div>
+        </div>
         <TabMenu
           model={tabItems}
           activeIndex={currentIndex}
           onTabChange={onTabChange}
         />
       </Panel>
-      <div>{tabData}</div>
+      <div className={styles.tabContent}>{tabData}</div>
     </div>
   );
 }

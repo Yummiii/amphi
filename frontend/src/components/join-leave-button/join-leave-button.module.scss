@@ -1,0 +1,51 @@
+.joinLeaveButton {
+    :global(.p-button) {
+        font-weight: 500;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
+.joinButton {
+    :global(.p-button) {
+        background: var(--green-500);
+        border-color: var(--green-500);
+        color: white;
+        
+        &:hover {
+            background: var(--green-600);
+            border-color: var(--green-600);
+        }
+        
+        &:focus {
+            box-shadow: 0 0 0 2px var(--green-200);
+        }
+    }
+}
+
+.leaveButton {
+    :global(.p-button) {
+        background: var(--red-500);
+        border-color: var(--red-500);
+        color: white;
+        
+        &:hover {
+            background: var(--red-600);
+            border-color: var(--red-600);
+        }
+        
+        &:focus {
+            box-shadow: 0 0 0 2px var(--red-200);
+        }
+    }
+} 

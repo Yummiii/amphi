@@ -1,12 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreatePostDto } from "../../models";
+import { R2UploadService } from "../../services/r2-upload.service";
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private r2UploadService: R2UploadService,
+  ) {}
 
-  async create(createPostDto: CreatePostDto, authorId: string) {
+  async create(
+    createPostDto: CreatePostDto,
+    authorId: string,
+    file?: Express.Multer.File,
+  ) {
     const board = await this.prisma.board.findUnique({
       where: { slug: createPostDto.board },
     });
@@ -15,11 +23,15 @@ export class PostsService {
       throw new Error("Board not found");
     }
 
+    let attachmentUrl: string | null = null;
+    if (file) {
+      attachmentUrl = await this.r2UploadService.uploadFile(file, "posts");
+    }
+
     return this.prisma.post.create({
       data: {
-        title: createPostDto.title,
         content: createPostDto.content,
-        attachment: createPostDto.attachment,
+        attachment: attachmentUrl,
         boardId: board.id,
         authorId,
       },
