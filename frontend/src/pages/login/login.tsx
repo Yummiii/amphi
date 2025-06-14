@@ -6,6 +6,7 @@ import { Divider } from "primereact/divider";
 import { Password } from "primereact/password";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../../api/auth";
+import type { AuthResponse, LoginRequest } from "../../models/auth";
 import { useNavigate } from "react-router";
 import styles from "./login.module.scss";
 
@@ -13,7 +14,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const mutation = useMutation({
+  const mutation = useMutation<AuthResponse, Error, LoginRequest>({
     mutationFn: login,
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
@@ -84,6 +85,14 @@ export default function Login() {
             disabled={!valid}
             onClick={loginClick}
             loading={loading}
+          />
+        </div>
+        <div className={styles.linkContainer}>
+          <span>Não tem uma conta? </span>
+          <Button
+            label="Criar Conta"
+            link
+            onClick={() => navigate("/register")}
           />
         </div>
       </Card>

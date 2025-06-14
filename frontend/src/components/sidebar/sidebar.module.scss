@@ -1,0 +1,23 @@
+.sidebarContainer {
+    width: 17rem;
+}
+
+.sidebar {
+    width: 100%;
+    height: 100%;
+
+    :global(.p-card-content) {
+        padding: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    :global(.p-card-body) {
+        padding: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+}

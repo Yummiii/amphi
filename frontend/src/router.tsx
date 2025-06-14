@@ -3,6 +3,8 @@ import Home from "./pages/home";
 import About from "./pages/about";
 import MainTemplate from "./templates/main-template/main-template";
 import Login from "./pages/login/login";
+import Board from "./pages/board/board";
+import Register from "./pages/register/register";
 
 const router = createBrowserRouter([
   {
@@ -17,11 +19,19 @@ const router = createBrowserRouter([
         path: "/about",
         element: <About />,
       },
+      {
+        path: "/boards/:slug",
+        element: <Board />,
+      },
     ],
   },
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
 ]);
 

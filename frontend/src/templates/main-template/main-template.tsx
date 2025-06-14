@@ -7,7 +7,6 @@ export default function MainTemplate() {
     <div className={styles.page}>
       <Sidebar />
       <div className={styles.mainArea}>
-        <h1>Navbar aqui</h1>
         <div className={styles.content}>
           <Outlet />
         </div>

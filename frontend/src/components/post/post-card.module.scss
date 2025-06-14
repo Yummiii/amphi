@@ -1,0 +1,17 @@
+.postCard {
+    width: 55rem;
+}
+
+.author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    span {
+        font-weight: bold;
+    }
+
+    :global(img) {
+        object-fit: cover;
+    }
+}

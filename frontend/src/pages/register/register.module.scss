@@ -7,7 +7,7 @@
 }
 
 .loginCard {
-    width: 30rem;
+    width: 35rem;
     margin: 1rem;
 
     :global(.p-card-content) {
@@ -32,6 +32,14 @@
 
     :global(.p-password-input) {
         border-radius: 0px 6px 6px 0px;
+    }
+
+    :global(.p-calendar) {
+        width: 100%;
+
+        .p-inputtext {
+            border-radius: 0px 6px 6px 0px;
+        }
     }
 }
 

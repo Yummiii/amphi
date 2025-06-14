@@ -9,12 +9,3 @@ body,
     margin: 0;
     padding: 0;
 }
-
-.p-button {
-    display: flex;
-    justify-content: center;
-
-    .p-button-label {
-        flex: 0;
-    }
-}
