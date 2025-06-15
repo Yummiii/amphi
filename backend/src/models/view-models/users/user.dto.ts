@@ -6,7 +6,6 @@ export class CreateUserDto {
   email: string;
   username: string;
   birthdate: string;
-  avatar?: string;
   tags?: string[];
   password: string;
 }

@@ -7,6 +7,5 @@ export interface Post {
   attachment: string | null;
   createdAt: string;
   author: User;
-  upvotes?: number;
-  downvotes?: number;
+  score: number;
 }
