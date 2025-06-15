@@ -26,7 +26,6 @@ export default function UserProfile() {
 
     const handleProfilePage = () => {
         navigate("/profile");
-        console.log("User profile");
     };
 
     const menuItems = [
