@@ -2,16 +2,17 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
   Param,
+  UploadedFile,
 } from "@nestjs/common";
 import { CreateUserDto, LoginDto, UserProfileDto } from "../../models";
 import { UsersService } from "./users.service";
 import { Public } from "../../auth/public.decorator";
-import { Prisma, User } from "generated/prisma";
+import { User } from "generated/prisma";
 import { CurrentUser } from "src/auth";
+import { ImageUpload } from "src/decorators/file-upload.decorator";
+import { ErrorHandlerUtil, ResponseBuilder, ApiResponse } from "../../common";
 
 @Controller("users")
 export class UsersController {
@@ -19,61 +20,39 @@ export class UsersController {
 
   @Public()
   @Post("/register")
-  async create(@Body() createUserDto: CreateUserDto) {
-    try {
-      return await this.usersService.create(createUserDto);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        if (e.code === "P2002") {
-          throw new HttpException(
-            "User with this email already exists",
-            HttpStatus.CONFLICT,
-          );
-        }
-      }
-
-      throw new HttpException(
-        "Failed to create user",
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+  @ImageUpload("avatar")
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ApiResponse> {
+    return ErrorHandlerUtil.executeWithErrorHandling(async () => {
+      const result = await this.usersService.create(createUserDto, file);
+      return ResponseBuilder.success(result, "User created successfully");
+    }, "User registration");
   }
 
   @Public()
   @Post("/login")
-  async login(@Body() loginDto: LoginDto) {
-    try {
-      return await this.usersService.login(loginDto);
-    } catch {
-      throw new HttpException("Failed to log in user", HttpStatus.UNAUTHORIZED);
-    }
+  async login(@Body() loginDto: LoginDto): Promise<ApiResponse> {
+    return ErrorHandlerUtil.executeWithErrorHandling(async () => {
+      const result = await this.usersService.login(loginDto);
+      return ResponseBuilder.success(result, "Login successful");
+    }, "User login");
   }
 
   @Get("/me")
-  getCurrentUser(@CurrentUser() user: User) {
-    return user;
+  getCurrentUser(@CurrentUser() user: User): ApiResponse<User> {
+    return ResponseBuilder.success(user, "Current user retrieved");
   }
 
   @Public()
   @Get("/:id")
-  async getUserProfile(@Param("id") id: string): Promise<UserProfileDto> {
-    try {
+  async getUserProfile(
+    @Param("id") id: string,
+  ): Promise<ApiResponse<UserProfileDto>> {
+    return ErrorHandlerUtil.executeWithErrorHandling(async () => {
       const userProfile = await this.usersService.getUserProfile(id);
-
-      if (!userProfile) {
-        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-      }
-
-      return userProfile;
-    } catch (e) {
-      if (e instanceof HttpException) {
-        throw e;
-      }
-
-      throw new HttpException(
-        "Failed to get user profile",
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+      return ResponseBuilder.success(userProfile, "User profile retrieved");
+    }, "Get user profile");
   }
 }

@@ -4,11 +4,12 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { UsersModule } from "./controllers/users/users.module";
 import { PostsModule } from "./controllers/posts/posts.module";
 import { BoardsModule } from "./controllers/boards/boards.module";
+import { CommentsModule } from "./controllers/comments/comments.module";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, PostsModule, BoardsModule],
+  imports: [PrismaModule, AuthModule, UsersModule, PostsModule, BoardsModule, CommentsModule],
   controllers: [],
   providers: [
     {

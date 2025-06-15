@@ -10,22 +10,33 @@ import * as argon2 from "argon2";
 import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from "uuid";
 import { User } from "generated/prisma";
+import { R2UploadService } from "src/services/r2-upload.service";
+import { NotFoundException, UnauthorizedException } from "../../common";
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private r2UploadService: R2UploadService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<AuthResponseDto> {
+  async create(
+    createUserDto: CreateUserDto,
+    file?: Express.Multer.File,
+  ): Promise<AuthResponseDto> {
     const { tags, ...userData } = createUserDto;
+
+    let attachmentUrl: string | null = null;
+    if (file) {
+      attachmentUrl = await this.r2UploadService.uploadFile(file, "users");
+    }
 
     const user = await this.prisma.user.create({
       data: {
         email: userData.email,
         username: userData.username,
-        avatar: userData.avatar,
+        avatar: attachmentUrl,
         birthdate: new Date(userData.birthdate),
         tags: tags
           ? {
@@ -53,7 +64,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new UnauthorizedException("Invalid email or password");
     }
 
     const isPasswordValid = await argon2.verify(
@@ -62,7 +73,7 @@ export class UsersService {
     );
 
     if (!isPasswordValid) {
-      throw new Error("Invalid password");
+      throw new UnauthorizedException("Invalid email or password");
     }
 
     return {
@@ -70,7 +81,7 @@ export class UsersService {
     };
   }
 
-  async getUserProfile(userId: string): Promise<UserProfileDto | null> {
+  async getUserProfile(userId: string): Promise<UserProfileDto> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -148,12 +159,14 @@ export class UsersService {
       },
     });
 
-    console.log(user);
+    if (!user) {
+      throw new NotFoundException("User");
+    }
 
     return user;
   }
 
-  async generateToken(user: User): Promise<string> {
+  private async generateToken(user: User): Promise<string> {
     return this.jwtService.signAsync({
       id: user.id,
       nonce: uuidv4(),

@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreatePostDto } from "../../models";
 import { R2UploadService } from "../../services/r2-upload.service";
+import { NotFoundException } from "../../common";
 
 @Injectable()
 export class PostsService {
@@ -20,7 +21,7 @@ export class PostsService {
     });
 
     if (!board) {
-      throw new Error("Board not found");
+      throw new NotFoundException('Board');
     }
 
     let attachmentUrl: string | null = null;
@@ -35,11 +36,6 @@ export class PostsService {
         boardId: board.id,
         authorId,
       },
-    });
-  }
-
-  async findAll() {
-    return this.prisma.post.findMany({
       include: {
         author: {
           select: {
@@ -52,6 +48,28 @@ export class PostsService {
           select: {
             id: true,
             name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findAll() {
+    const posts = await this.prisma.post.findMany({
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        board: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
           },
         },
         _count: {
@@ -60,15 +78,22 @@ export class PostsService {
             votes: true,
           },
         },
+        votes: {
+          select: {
+            value: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
+
+    return this.transformPostsWithScore(posts);
   }
 
   async findByBoard(boardId: number) {
-    return this.prisma.post.findMany({
+    const posts = await this.prisma.post.findMany({
       where: { boardId },
       include: {
         author: {
@@ -78,27 +103,11 @@ export class PostsService {
             avatar: true,
           },
         },
-        _count: {
-          select: {
-            comments: true,
-            votes: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-  }
-
-  async findByAuthor(authorId: string) {
-    return this.prisma.post.findMany({
-      where: { authorId },
-      include: {
         board: {
           select: {
             id: true,
             name: true,
+            slug: true,
           },
         },
         _count: {
@@ -107,11 +116,56 @@ export class PostsService {
             votes: true,
           },
         },
+        votes: {
+          select: {
+            value: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
+
+    return this.transformPostsWithScore(posts);
+  }
+
+  async findByAuthor(authorId: string) {
+    const posts = await this.prisma.post.findMany({
+      where: { authorId },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        board: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            votes: true,
+          },
+        },
+        votes: {
+          select: {
+            value: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return this.transformPostsWithScore(posts);
   }
 
   async vote(postId: string, userId: string, value: number) {
@@ -130,6 +184,17 @@ export class PostsService {
         userId,
         value,
       },
+    });
+  }
+
+  private transformPostsWithScore(posts: any[]) {
+    return posts.map((post) => {
+      const score = post.votes.reduce((sum: number, vote: any) => sum + vote.value, 0);
+      const { votes, ...postWithoutVotes } = post;
+      return {
+        ...postWithoutVotes,
+        score,
+      };
     });
   }
 }

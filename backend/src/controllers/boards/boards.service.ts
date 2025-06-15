@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreateBoardDto } from "../../models";
 import { R2UploadService } from "src/services/r2-upload.service";
+import { NotFoundException, ForbiddenException } from "../../common";
 
 @Injectable()
 export class BoardsService {
@@ -28,6 +29,14 @@ export class BoardsService {
           slug: createBoardDto.slug,
           image: attachmentUrl,
         },
+        include: {
+          _count: {
+            select: {
+              posts: true,
+              members: true,
+            },
+          },
+        },
       });
 
       await prisma.boardMember.create({
@@ -52,11 +61,14 @@ export class BoardsService {
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   }
 
   async findOne(slug: string) {
-    return this.prisma.board.findUnique({
+    const board = await this.prisma.board.findUnique({
       where: { slug },
       include: {
         posts: {
@@ -72,6 +84,11 @@ export class BoardsService {
               select: {
                 comments: true,
                 votes: true,
+              },
+            },
+            votes: {
+              select: {
+                value: true,
               },
             },
           },
@@ -98,6 +115,24 @@ export class BoardsService {
         },
       },
     });
+
+    if (!board) {
+      throw new NotFoundException("Board");
+    }
+
+    const postsWithScore = board.posts.map((post) => {
+      const score = post.votes.reduce((sum, vote) => sum + vote.value, 0);
+      const { votes, ...postWithoutVotes } = post;
+      return {
+        ...postWithoutVotes,
+        score,
+      };
+    });
+
+    return {
+      ...board,
+      posts: postsWithScore,
+    };
   }
 
   async addMember(slug: string, userId: string, role: number = 1) {
@@ -106,7 +141,7 @@ export class BoardsService {
     });
 
     if (!board) {
-      throw new Error("Board not found");
+      throw new NotFoundException("Board");
     }
 
     return this.prisma.boardMember.create({
@@ -114,6 +149,15 @@ export class BoardsService {
         boardId: board.id,
         userId,
         role,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
       },
     });
   }
@@ -124,7 +168,7 @@ export class BoardsService {
     });
 
     if (!board) {
-      throw new Error("Board not found");
+      throw new NotFoundException("Board");
     }
 
     return this.prisma.boardMember.delete({
@@ -148,16 +192,18 @@ export class BoardsService {
     });
 
     if (!board) {
-      throw new Error("Board not found");
+      throw new NotFoundException("Board");
     }
 
     if (board.members.length === 0) {
-      throw new Error("User is not a member of this board");
+      throw new ForbiddenException("You are not a member of this board");
     }
 
     const userMembership = board.members[0];
     if (userMembership.role !== 0) {
-      throw new Error("Only board administrators can delete the board");
+      throw new ForbiddenException(
+        "Only board administrators can delete the board",
+      );
     }
 
     return this.prisma.board.delete({

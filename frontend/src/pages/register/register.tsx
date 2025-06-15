@@ -1,10 +1,11 @@
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { Password } from "primereact/password";
 import { Calendar } from "primereact/calendar";
+import { FileUpload, type FileUploadSelectEvent } from "primereact/fileupload";
 import { useMutation } from "@tanstack/react-query";
 import { register } from "../../api/auth";
 import type { AuthResponse, RegisterRequest } from "../../models/auth";
@@ -17,6 +18,8 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [birthdate, setBirthdate] = useState<Date | null>(null);
+  const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
+  const fileUploadRef = useRef<FileUpload>(null);
 
   const navigate = useNavigate();
   const mutation = useMutation<AuthResponse, Error, RegisterRequest>({
@@ -34,9 +37,21 @@ export default function Register() {
         username,
         password,
         birthdate: birthdate.toISOString().split("T")[0],
+        avatar: selectedAvatar || undefined,
       });
     }
-  }, [mutation, email, username, password, birthdate]);
+  }, [mutation, email, username, password, birthdate, selectedAvatar]);
+
+  const onAvatarSelect = useCallback((e: FileUploadSelectEvent) => {
+    const file = e.files[0];
+    if (file) {
+      setSelectedAvatar(file);
+    }
+  }, []);
+
+  const onAvatarRemove = useCallback(() => {
+    setSelectedAvatar(null);
+  }, []);
 
   const loading = useMemo(() => {
     return mutation.isPending;
@@ -104,6 +119,32 @@ export default function Register() {
               dateFormat="dd/mm/yy"
               maxDate={new Date()}
               yearRange="1900:2030"
+            />
+          </div>
+
+          <div className="field">
+            <label
+              htmlFor="avatar"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--text-color-secondary)",
+                marginBottom: "0.5rem",
+                display: "block",
+              }}
+            >
+              <i className="pi pi-image" style={{ marginRight: "0.5rem" }}></i>
+              Avatar (opcional):
+            </label>
+            <FileUpload
+              ref={fileUploadRef}
+              mode="basic"
+              name="avatar"
+              accept="image/*"
+              maxFileSize={5000000}
+              onSelect={onAvatarSelect}
+              onClear={onAvatarRemove}
+              chooseLabel="Escolher avatar"
+              className={styles.fileUpload}
             />
           </div>
 
