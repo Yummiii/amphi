@@ -5,11 +5,10 @@ import styles from "./profile.module.scss";
 
 export default function Profile() {
     const { data: user, isLoading, error } = useCurrentUser();
-    console.log(user);
 
-    // useEffect(() => {
-    //     console.log(user.username);
-    // }, [isLoading]);
+    useEffect(() => {
+        console.log(user);
+    }, [isLoading]);
 
     return (
         <div>
