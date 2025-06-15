@@ -37,12 +37,17 @@ export async function getBoard(slug: string): Promise<Board> {
   return res.data;
 }
 
-export async function joinBoard(boardSlug: string) {
-  const res = await apiClient.post(`/boards/${boardSlug}/join`);
+export async function joinBoard(slug: string) {
+  const res = await apiClient.post(`/boards/${slug}/join`);
   return res.data;
 }
 
-export async function leaveBoard(boardSlug: string) {
-  const res = await apiClient.post(`/boards/${boardSlug}/leave`);
+export async function leaveBoard(slug: string) {
+  const res = await apiClient.post(`/boards/${slug}/leave`);
+  return res.data;
+}
+
+export async function deleteBoard(slug: string) {
+  const res = await apiClient.delete(`/boards/${slug}`);
   return res.data;
 }
