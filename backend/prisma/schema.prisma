@@ -33,9 +33,9 @@ model User {
 
 model BoardMember {
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   boardId   Int
-  board     Board    @relation(fields: [boardId], references: [id])
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   role      Int      @default(0)
 
@@ -55,9 +55,9 @@ model Board {
 
 model PostVote {
   postId    String
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   value     Int      @default(0)
 
@@ -72,16 +72,16 @@ model Post {
   author     User       @relation(fields: [authorId], references: [id])
   comments   Comment[]
   boardId    Int
-  board      Board      @relation(fields: [boardId], references: [id])
+  board      Board      @relation(fields: [boardId], references: [id], onDelete: Cascade)
   createdAt  DateTime   @default(now())
   votes      PostVote[]
 }
 
 model CommentVote {
   commentId String
-  comment   Comment  @relation(fields: [commentId], references: [id])
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   value     Int      @default(0)
 
@@ -93,9 +93,9 @@ model Comment {
   content   String
   postId    String
   level     Int           @default(0)
-  post      Post          @relation(fields: [postId], references: [id])
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   authorId  String
-  author    User          @relation(fields: [authorId], references: [id])
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime      @default(now())
   votes     CommentVote[]
 }

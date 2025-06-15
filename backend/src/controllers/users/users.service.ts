@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { CreateUserDto, LoginDto, AuthResponseDto } from "../../models";
+import {
+  CreateUserDto,
+  LoginDto,
+  AuthResponseDto,
+  UserProfileDto,
+} from "../../models";
 import * as argon2 from "argon2";
 import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from "uuid";
@@ -63,6 +68,89 @@ export class UsersService {
     return {
       token: await this.generateToken(user),
     };
+  }
+
+  async getUserProfile(userId: string): Promise<UserProfileDto | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        birthdate: true,
+        avatar: true,
+        createdAt: true,
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+          },
+        },
+        boards: {
+          select: {
+            role: true,
+            createdAt: true,
+            board: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                description: true,
+                image: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+        posts: {
+          select: {
+            id: true,
+            content: true,
+            attachment: true,
+            createdAt: true,
+            board: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        comments: {
+          select: {
+            id: true,
+            content: true,
+            level: true,
+            createdAt: true,
+            post: {
+              select: {
+                id: true,
+                content: true,
+                board: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    console.log(user);
+
+    return user;
   }
 
   async generateToken(user: User): Promise<string> {

@@ -5,8 +5,9 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Param,
 } from "@nestjs/common";
-import { CreateUserDto, LoginDto } from "../../models";
+import { CreateUserDto, LoginDto, UserProfileDto } from "../../models";
 import { UsersService } from "./users.service";
 import { Public } from "../../auth/public.decorator";
 import { Prisma, User } from "generated/prisma";
@@ -51,5 +52,28 @@ export class UsersController {
   @Get("/me")
   getCurrentUser(@CurrentUser() user: User) {
     return user;
+  }
+
+  @Public()
+  @Get("/:id")
+  async getUserProfile(@Param("id") id: string): Promise<UserProfileDto> {
+    try {
+      const userProfile = await this.usersService.getUserProfile(id);
+
+      if (!userProfile) {
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+      }
+
+      return userProfile;
+    } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
+
+      throw new HttpException(
+        "Failed to get user profile",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

@@ -6,24 +6,29 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  UploadedFile,
+  Delete,
 } from "@nestjs/common";
 import { BoardsService } from "./boards.service";
 import { CreateBoardDto } from "../../models";
 import { CurrentUser } from "../../auth/current-user.decorator";
 import { Public } from "../../auth/public.decorator";
 import { Prisma, User } from "generated/prisma";
+import { ImageUpload } from "src/decorators/file-upload.decorator";
 
 @Controller("boards")
 export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
   @Post()
+  @ImageUpload("image")
   async create(
     @Body() createBoardDto: CreateBoardDto,
+    @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: User,
   ) {
     try {
-      return await this.boardsService.create(createBoardDto, user.id);
+      return await this.boardsService.create(createBoardDto, user.id, file);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === "P2002") {
@@ -97,6 +102,40 @@ export class BoardsController {
 
       throw new HttpException(
         "Failed to remove member from board",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Delete(":boardSlug")
+  async deleteBoard(
+    @Param("boardSlug") slug: string,
+    @CurrentUser() user: User,
+  ) {
+    try {
+      await this.boardsService.deleteBoard(slug, user.id);
+      return { message: "Board deleted successfully" };
+    } catch (e) {
+      if (e.message === "Board not found") {
+        throw new HttpException("Board not found", HttpStatus.NOT_FOUND);
+      }
+
+      if (e.message === "User is not a member of this board") {
+        throw new HttpException(
+          "You are not a member of this board",
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      if (e.message === "Only board administrators can delete the board") {
+        throw new HttpException(
+          "Only board administrators can delete the board",
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      throw new HttpException(
+        "Failed to delete board",
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
