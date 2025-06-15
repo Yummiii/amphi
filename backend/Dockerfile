@@ -12,4 +12,4 @@ RUN yarn build
 
 EXPOSE 3000
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "start:migrate:prod"]
