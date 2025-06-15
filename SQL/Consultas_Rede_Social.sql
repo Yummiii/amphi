@@ -2,7 +2,7 @@ create view num_users as
 select count(distinct(id)) as Num_users
 from `User`;
 
-create function Comment_By_User(_authorId char(50))
+create function Count_Comment(_authorId char(50))
 returns int
 deterministic
 reads sql data
@@ -12,7 +12,7 @@ return(
 	where `Comment`.authorId = _authorId
 );
 
-create function Post_By_User(_authorId char(50))
+create function Count_Post(_authorId char(50))
 returns int
 deterministic
 reads sql data
