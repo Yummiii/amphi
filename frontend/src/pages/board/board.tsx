@@ -93,6 +93,8 @@ export default function Board() {
         [isAdmin]
     );
 
+    console.log(query.data?.image);
+
     return (
         <div className={styles.board}>
             <Panel>
