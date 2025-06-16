@@ -93,12 +93,15 @@ export default function Board() {
         [isAdmin]
     );
 
+    let bannerImage = query.data?.image;
+
     console.log(query.data?.image);
 
     return (
         <div className={styles.board}>
             <Panel>
                 <div className={styles.boardHeader}>
+                    {/* <img src={query.data?.image} alt="" /> */}
                     <div className={styles.boardInfo}>
                         <h2 className={styles.boardTitle}>
                             {query.data?.name}
@@ -122,6 +125,7 @@ export default function Board() {
                     activeIndex={currentIndex}
                     onTabChange={onTabChange}
                 />
+                <img src={bannerImage} className={styles.boardBannerArea}></img>
             </Panel>
             <div className={styles.tabContent}>{tabData}</div>
         </div>
