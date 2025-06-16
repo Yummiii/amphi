@@ -1,0 +1,21 @@
+services:
+  database:
+    image: "mariadb:latest"
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=amphi
+    volumes:
+      - mariadb:/var/lib/mysql
+
+  backend:
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=mysql://root:root@database:3306/amphi
+    depends_on:
+      - database
+
+volumes:
+  mariadb:

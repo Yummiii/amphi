@@ -98,4 +98,7 @@ model Comment {
   author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime      @default(now())
   votes     CommentVote[]
+  parentId  String?
+  parent    Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]     @relation("CommentReplies")
 }

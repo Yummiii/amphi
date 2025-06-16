@@ -12,4 +12,5 @@ export interface RegisterRequest {
   username: string;
   password: string;
   birthdate: string;
+  avatar?: File;
 }

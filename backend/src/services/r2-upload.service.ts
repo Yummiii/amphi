@@ -37,10 +37,7 @@ export class R2UploadService {
     this.publicUrl = publicUrl;
   }
 
-  async uploadFile(
-    file: Express.Multer.File,
-    folder: string = "posts",
-  ): Promise<string> {
+  async uploadFile(file: Express.Multer.File, folder: string): Promise<string> {
     const fileExtension = file.originalname.split(".").pop();
     const fileName = `${randomUUID()}.${fileExtension}`;
     const key = `${folder}/${fileName}`;

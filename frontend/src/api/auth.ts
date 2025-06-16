@@ -14,7 +14,21 @@ export const login = async (login: LoginRequest): Promise<AuthResponse> => {
 export const register = async (
   registerData: RegisterRequest,
 ): Promise<AuthResponse> => {
-  const response = await apiClient.post("/users/register", registerData);
+  const formData = new FormData();
+  formData.append("email", registerData.email);
+  formData.append("username", registerData.username);
+  formData.append("password", registerData.password);
+  formData.append("birthdate", registerData.birthdate);
+
+  if (registerData.avatar) {
+    formData.append("avatar", registerData.avatar);
+  }
+
+  const response = await apiClient.post("/users/register", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
