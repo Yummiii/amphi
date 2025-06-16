@@ -2,7 +2,8 @@
 
 # AMPHI
 
-Um Fórum de conversas escrito em React.
+Um Fórum de conversas escrito em React.  
+Link: https://amphi.zuraaa.com/
 
 # Funcionalidades desenvolvidas:
 
@@ -72,11 +73,11 @@ VITE_API_URL=https://api.zuraaa.com/amphi/
 -   yarn install
 -   yarn run start:dev
 
-API: https://amphi.zuraaa.com/
-
 ---
 
 # Laboratório de Banco de Dados
+
+Foram implementados procedures, inserção de dados, criação de tables e consultas práticas
 
 Arquivos criados:
 
