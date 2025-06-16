@@ -1,0 +1,3 @@
+INSERT INTO Tag (id, name, createdAt) VALUES('550e8400-e29b-41d4-a716-446655440032           ', '#CAT                                     ', '2025-06-14 08:49:20');
+INSERT INTO `User` (id, email, username, birthdate, avatar, createdAt) VALUES('550e8400-e29b-41d4-a716-446655440034', 'dumont@example.com',      'dumont',     '1873-07-20', 'https://cdn.seusite.com/avatars/dumont.jpg',      '2025-06-13 09:49:00');
+INSERT INTO `User` (id, email, username, birthdate, avatar, createdAt) VALUES('550e8400-e29b-41d4-a716-446655440035', 'enzogames123@example.com',      'enzogames',     '2016-07-15', 'https://cdn.seusite.com/avatars/boruto.jpg',      '2025-06-14 16:31:00');
