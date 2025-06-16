@@ -3,7 +3,8 @@
 # AMPHI
 
 Um Fórum de conversas escrito em React.  
-Link: https://amphi.zuraaa.com/
+Link: https://amphi.zuraaa.com/  
+API: https://api.zuraaa.com/amphi/
 
 # Funcionalidades desenvolvidas:
 
