@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { getBoards } from "../../api/boards";
 import { useCallback, useState } from "react";
-import type { Board } from "../../models/boards";
 import { ListBox, type ListBoxChangeEvent } from "primereact/listbox";
 import { useNavigate } from "react-router";
+import type { Board } from "../../models/board";
 
 export default function BoardsList() {
   const [board, setBoard] = useState<Board | null>(null);
